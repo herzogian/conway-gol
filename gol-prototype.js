@@ -14,7 +14,19 @@ function display(frame) {
 }
 // var randomBoolean = Math.random() >= 0.5
 // widthArr.push(randomBoolean);
-
+function plainBoard() {
+  length = length || 10
+  width = width || 10
+  var rows = new Array(length)
+  for (var row = 0; row < length; row++) {
+    var rowArray = new Array(width);
+    rows[row] = rowArray
+    for (var column = 0; column < width; column++) {
+      rows[row][column] = true
+    }
+  }
+  return rows;
+}
 function randomBoard(length, width) {
     length = length || 10
     width = width || 10
@@ -153,6 +165,68 @@ function loopArray(board) {
     return(newBoard);
     display(newBoard);
   };
+
+var boardOfficial = randomBoard()
+
+function next() {
+  boardOfficial = loopArray(boardOfficial)
+  display(boardOfficial)
+  $(document).ready(function() {
+    nextCount = -1
+    for (var x = 0; x < 10; x++) {
+      for (var y = 0; y < 10; y++) {
+        nextCount++
+        if (boardOfficial[x][y]) {
+          $('#container').children('div').eq(nextCount).attr('class', 'liveunit')
+        }
+        else {
+          $('#container').children('div').eq(nextCount).attr('class', 'unit')
+        }
+      }
+    }
+  })
+}
+//
+$(document).ready(function() {
+  for (var x = 0; x < 10; x++) {
+    for (var y = 0; y < 10; y++) {
+      if (boardOfficial[x][y]) {
+        $("<div>").addClass("liveunit").addClass("unit").appendTo('#container')
+      }
+      else {
+        $("<div>").addClass("unit").appendTo('#container')
+      }
+    }
+  };
+  $( function() {
+    $( ".widget input[type=submit], .widget a, .widget button" ).button();
+    $( "button, input, a" ).click( function( event ) {
+      event.preventDefault();
+      });
+  });
+  $('.unit').click(function (e) {
+    var mouseX = e.pageX
+    var mouseY = e.pageY
+    var elem = document.elementFromPoint(mouseX, mouseY)
+    $(elem).toggleClass('liveunit')
+  })
+})
+
+// find out which elem 
+// if elem class is === unit
+// $('#unit').hover(function() {
+//   this.addClass('liveunit').removeClass('unit');
+// });
+// $('#container').children('div').eq(0)
+// make plain board default
+// hover units and have color be liveunit
+// click and changes board values to be used in next frame
+// make display function that changes classes of div containers
+// according to live/dead status
+// $("#td_id").toggleClass('change_me newClass');
+// I can basically alter the function on 164 to do that...
+// make a function called 'next' that takes the argument 'board'
+// changes the global 'boardOfficial variable'
 // what about a randomly placed values...
 // start it w/ a glider
 // what do I want to do now????? i've got display...
