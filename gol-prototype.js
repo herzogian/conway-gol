@@ -1,32 +1,18 @@
-function display(frame) {
-  for (var row = 0; row < frame.length; row++){
-    displayString = ''
-    for (var col = 0; col < frame[row].length; col++) {
-      if (frame[row][col]) {
-        displayString += 'O'
-      }
-      else {
-        displayString += '_'
-      }
-    }
-    console.log(displayString);
-  }
-}
-// var randomBoolean = Math.random() >= 0.5
-// widthArr.push(randomBoolean);
-function plainBoard() {
-  length = length || 10
-  width = width || 10
+// creates a matrix of false values
+function createPlainBoard(length, width) {
+  var length = length || 10
+  var width = width || 10
   var rows = new Array(length)
   for (var row = 0; row < length; row++) {
     var rowArray = new Array(width);
     rows[row] = rowArray
     for (var column = 0; column < width; column++) {
-      rows[row][column] = true
+      rows[row][column] = false
     }
   }
   return rows;
 }
+// creates a matrix of random boolean values
 function randomBoard(length, width) {
     length = length || 10
     width = width || 10
@@ -40,107 +26,108 @@ function randomBoard(length, width) {
     }
     return rows;
 }
-function neighborCount(myArray, outer, inner) {
+// counts all live neighbors of every 'cell' in the matrix
+function neighborCount(matrix, x, y) {
   count = 0;
-  if ((outer === 0) && (inner === 0)) {
-    if (myArray[outer][inner+1]) {
+  if ((x === 0) && (y === 0)) {
+    if (matrix[x][y+1]) {
       count++
     }
-    if (myArray[outer+1][inner]) {
+    if (matrix[x+1][y]) {
       count++
     }
-    if (myArray[outer+1][inner+1]) {
-      count++
-    }
-  }
-  else if ((outer === myArray.length) && (inner === 0)) {
-    if (myArray[outer-1][inner+1]) {
-      count++
-    }
-    if (myArray[outer-1][inner]) {
-      count++
-    }
-    if (myArray[outer][inner+1]) {
+    if (matrix[x+1][y+1]) {
       count++
     }
   }
-  else if (outer === 0) {
-    if (myArray[outer][inner+1]) {
+  else if ((x === matrix.length) && (y === 0)) {
+    if (matrix[x-1][y+1]) {
       count++
     }
-    if (myArray[outer][inner-1]) {
+    if (matrix[x-1][y]) {
       count++
     }
-    if (myArray[outer+1][inner]) {
-      count++
-    }
-    if (myArray[outer+1][inner+1]) {
-      count++
-    }
-    if (myArray[outer+1][inner-1]) {
+    if (matrix[x][y+1]) {
       count++
     }
   }
-  else if ((outer === myArray.length) && (inner === myArray.length)) {
-    if (myArray[outer-1][inner]) {
+  else if (x === 0) {
+    if (matrix[x][y+1]) {
       count++
     }
-    if (myArray[outer-1][inner-1]) {
+    if (matrix[x][y-1]) {
       count++
     }
-    if (myArray[outer][inner-1]) {
+    if (matrix[x+1][y]) {
+      count++
+    }
+    if (matrix[x+1][y+1]) {
+      count++
+    }
+    if (matrix[x+1][y-1]) {
       count++
     }
   }
-  else if (inner === 0) {
-    if (myArray[outer][inner+1]) {
+  else if ((x === matrix.length) && (y === matrix.length)) {
+    if (matrix[x-1][y]) {
       count++
     }
-// error @ line71. need to fix up for when outer+1 is out of bounds.
-// outer +1 cannot be greater than myArray.length. same goes for inner+1.
-    if ((myArray[outer+1] !== undefined) && (myArray[outer+1][inner])) {
+      if (matrix[x-1][y-1]) {
+        count++
+      }
+    if (matrix[x][y-1]) {
       count++
     }
-    if (myArray[outer-1][inner]) {
+  }
+  else if (y === 0) {
+    if (matrix[x][y+1]) {
       count++
     }
-    if ((myArray[outer+1] !== undefined) && (myArray[outer+1][inner+1])) {
+    if ((matrix[x+1] !== undefined) && (matrix[x+1][y])) {
       count++
     }
-    if (myArray[outer-1][inner+1]) {
+    if (matrix[x-1][y]) {
+      count++
+    }
+    if ((matrix[x+1] !== undefined) && (matrix[x+1][y+1])) {
+      count++
+    }
+    if (matrix[x-1][y+1]) {
       count++
     }
   }
 
-  else if ((outer > 0) && (inner > 0)) {
-    if (myArray[outer][inner+1]) {
+  else if ((x > 0) && (y > 0)) {
+    if (matrix[x][y+1]) {
       count++
     }
-    if (myArray[outer][inner-1]) {
+    if (matrix[x][y-1]) {
       count++
     }
-    if ((myArray[outer+1] !== undefined) && (myArray[outer+1][inner])) {
+    if ((matrix[x+1] !== undefined) && (matrix[x+1][y])) {
       count++
     }
-    if (myArray[outer-1][inner]) {
+    if (matrix[x-1][y]) {
       count++
     }
-    if ((myArray[outer+1] !== undefined) && (myArray[outer+1][inner+1])) {
+    if ((matrix[x+1] !== undefined) && (matrix[x+1][y+1])) {
       count++
     }
-    if (myArray[outer-1][inner-1]) {
+    if (matrix[x-1][y-1]) {
       count++
     }
-    if ((myArray[outer+1] !== undefined) && (myArray[outer+1][inner-1])) {
+    if ((matrix[x+1] !== undefined) && (matrix[x+1][y-1])) {
       count++
     }
-    if (myArray[outer-1][inner+1]) {
+    if (matrix[x-1][y+1]) {
       count++
     }
   }
   return count;
   }
-// }
+
+// here the board matrix is passed to loop array and
+// applies john horton conway's rules for the game of life(1970)
 function loopArray(board) {
   var newBoard = [];
   for (var row = 0; row < board.length; row++){
@@ -163,156 +150,85 @@ function loopArray(board) {
     newBoard.push(newRow);
     }
     return(newBoard);
-    display(newBoard);
   };
-
-var boardOfficial = randomBoard()
-
-function next() {
-  boardOfficial = loopArray(boardOfficial)
-  display(boardOfficial)
-  $(document).ready(function() {
-    nextCount = -1
-    for (var x = 0; x < 10; x++) {
-      for (var y = 0; y < 10; y++) {
-        nextCount++
-        if (boardOfficial[x][y]) {
-          $('#container').children('div').eq(nextCount).attr('class', 'liveunit')
-        }
-        else {
-          $('#container').children('div').eq(nextCount).attr('class', 'unit')
-        }
-      }
-    }
-  })
+// creates a matrix of random values
+var PlainBoard = createPlainBoard()
+// changes the values on board matrix
+function changeValue(board) {
+  var x = board[0]
+  var y = board[1]
+  if (PlainBoard[x][y]) {
+    PlainBoard[x][y] = false
+  }
+  else {
+    PlainBoard[x][y] = true
+  }
 }
-//
-$(document).ready(function() {
+
+var next = function() {
+  PlainBoard = loopArray(PlainBoard)
+  nextCount = -1
   for (var x = 0; x < 10; x++) {
     for (var y = 0; y < 10; y++) {
-      if (boardOfficial[x][y]) {
-        $("<div>").addClass("liveunit").addClass("unit").appendTo('#container')
+      nextCount++
+      // the live and dead cells are rendered below
+      if (PlainBoard[x][y]) {
+        $('#container').children('div').eq(nextCount).attr('class', 'liveunit')
       }
       else {
-        $("<div>").addClass("unit").appendTo('#container')
+        $('#container').children('div').eq(nextCount).attr('class', 'unit')
+      }
+    }
+  }
+}
+
+// two closures to be accessed in the child scope of
+// the two .click jQuery functions
+var myInterval;
+var intervalFlag = false
+
+function stringCoor(x, y) {
+  var xString = x.toString()
+  var yString = y.toString()
+  return xString + ', ' + yString
+}
+
+
+// calls next function every 1/2 second
+$(document).ready(function() {
+  $('#play').click(function() {
+      if (intervalFlag == false) {
+      myInterval = setInterval(next, 500)
+      intervalFlag = true
+      };
+  });
+// line stops the repeated execution of 'next'
+  $('#pause').click(function() {
+      if (intervalFlag) {
+      clearInterval(myInterval)
+      intervalFlag = false
+      };
+  });
+  // below the the board matrix is rendered
+  for (var x = 0; x < 10; x++) {
+    for (var y = 0; y < 10; y++) {
+      var stringID = stringCoor(x, y)
+      if (PlainBoard[x][y]) {
+        $("<div>").addClass("liveunit").addClass("unit").addClass("cell").attr('id', stringID).appendTo('#container')
+      }
+      else {
+        $("<div>").addClass("unit").addClass("cell").attr('id', stringID).appendTo('#container')
       }
     }
   };
-  $( function() {
-    $( ".widget input[type=submit], .widget a, .widget button" ).button();
-    $( "button, input, a" ).click( function( event ) {
-      event.preventDefault();
-      });
-  });
+  // line 226's .click changes values on the board matrix and toggles classes of divs
   $('.unit').click(function (e) {
-    var mouseX = e.pageX
-    var mouseY = e.pageY
-    var elem = document.elementFromPoint(mouseX, mouseY)
-    $(elem).toggleClass('liveunit')
+    var elem = document.elementFromPoint(e.pageX, e.pageY)
+    var $elem = $(elem)
+    $elem.toggleClass('liveunit')
+    $elem.addClass('unit')
+    var coor = $elem.attr('id').split(', ')
+    var coorArray = coor.map(function(l) {return parseInt(l)})
+    changeValue(coorArray)
   })
 })
-
-// find out which elem 
-// if elem class is === unit
-// $('#unit').hover(function() {
-//   this.addClass('liveunit').removeClass('unit');
-// });
-// $('#container').children('div').eq(0)
-// make plain board default
-// hover units and have color be liveunit
-// click and changes board values to be used in next frame
-// make display function that changes classes of div containers
-// according to live/dead status
-// $("#td_id").toggleClass('change_me newClass');
-// I can basically alter the function on 164 to do that...
-// make a function called 'next' that takes the argument 'board'
-// changes the global 'boardOfficial variable'
-// what about a randomly placed values...
-// start it w/ a glider
-// what do I want to do now????? i've got display...
-// well what can I do with the functions that I have?
-
-// Now. I need to have a board generated and then have a function
-// that takes that board and gives the next frame
-
-// initializes the board...
-// then...
-// i need to place true values in the board...
-// and then I need that function to step the frame forward...
-// and then I need to console.log the board...
-// all in one go...
-
-// my problem...where do i want to place the true values...
-// and how?
-
-// I can create a matrix w/ false values
-// I can
-// now I've got an array newBoard, what more do I need?
-// i need to display it. i need to be able to do another frame.
-// i need to print the board to the console.
-// in the console i want to print each false value as a | and each true value
-// as an O.
-// i want to convert each row into a string.
-// make a new variable gameString = ''
-// recycle the same for loop but this time if true
-// concatenate a '|'
-
-// for every element in each array run neighborCount
-// if neighborCount is 3 and current element is false
-// then put true in newBoard in such a way that row & col are the same.
-// i can't use 'newBoard[row][col] w/o there being those indexes in newBoard'
-// how to place values in new array...
-// in the first loop, i can create an array and push all the values into it
-// 3 hours to solve this problem...
-// this push needs to happen after each iteration of an array.
-// for each array in arr make a var new[col(?)/row(?)]
-// then for each in each array in arr push that value into new[col/row]
-// if (neighborCount = 3) && cell !== true
-// .push() it into new array in same position
-// Makes 'board' by length and width
-// with all values default to false.
-
-// for each object in each array in arr {
-// if the object is equal to false
-
-// on 19 start writing conditions for the case that there is something false
-// if false
-// count surrounding neighbors to see if they're alive
-
-
-// what counts as a neighbor
-// same array index +1 or index -1
-// same index array +1 or array -1
-// array -1 index -1 index +1
-// array +1 index -1 index -1
-
-// what about in the case that
-// index or outer array is 0?
-// if that's the case
-
-// do I make a new array for the changed
-// board?
-
-// if I decide to make a new board,
-// will I keep the old board?
-// Will I just keep making new boards?
-
-// It can go either way...
-// }
-
-// so what do I do to find
-
-// goals tomorrow
-
-// write loop that goes through
-// each element in each array in arr
-// and then pushes a new value into a new array
-// which will be the next step in the board
-
-// would I use .filter() to go through
-// the entire set of arrays?
-
-// newArray[row][col] = true/false
-//
-// for the record it would be funny to say that
-// half white women marginalized themselves when they
